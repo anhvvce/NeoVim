@@ -4,9 +4,11 @@ call plug#begin('~/.config/nvim')
     Plug 'vim-airline/vim-airline-themes'
     Plug 'projekt0n/github-nvim-theme'
     Plug 'vim-python/python-syntax'
-    Plug 'Jezda1337/nvim-html-css'
-    Plug 'windwp/nvim-ts-autotag'
-    Plug 'mattn/emmet-vim'
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'L3MON4D3/LuaSnip'
+    Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
 
 set termguicolors
@@ -65,7 +67,7 @@ set history=500
 set nomodeline
 set noswapfile
 set filetype=c
-filetype on
+filetype plugin indent on
 
 let g:python_highlight_all = 1
 let g:lightline = {'colorscheme': 'github_dark_high_contrast'}
@@ -79,3 +81,30 @@ inoremap        [  []<Left>
 inoremap <expr> ]  strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
 inoremap <expr> ' strpart(getline('.'), col('.')-1, 1) == "\'" ? "\<Right>" : "\'\'\<Left>"
 inoremap <expr> " strpart(getline('.'), col('.')-1, 1) == "\"" ? "\<Right>" : "\"\"\<Left>"
+
+lua << EOF
+vim.lsp.enable('pylsp')
+vim.lsp.config('pylsp', {
+  settings = {
+    pylsp = {
+      plugins = {
+        pycodestyle = { enabled = false },
+        pylint = { enabled = false },
+        jedi_completion = { fuzzy = true },
+      },
+    },
+  },
+})
+
+local cmp = require'cmp'
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<Tab>'] = cmp.mapping.select_next_item(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  }),
+  sources = {
+    { name = 'nvim_lsp' },
+  }
+})
+EOF
+
